@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Calendar, FileText, Trash2 } from "lucide-react";
+import { Plus, Calendar, FileText, Trash2, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -24,6 +25,7 @@ interface Cenario {
 }
 
 const Cenarios = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [cenarios, setCenarios] = useState<Cenario[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -117,13 +119,18 @@ const Cenarios = () => {
               Crie e gerencie cenários para análise de impacto de pessoal
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Cenário
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate("/")} variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar ao Dashboard
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Novo Cenário
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Criar Novo Cenário</DialogTitle>
@@ -171,6 +178,7 @@ const Cenarios = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {cenarios.length === 0 ? (
