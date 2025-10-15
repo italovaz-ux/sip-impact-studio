@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Save, X } from "lucide-react";
+import { Pencil, Save, X, ArrowLeft } from "lucide-react";
 
 interface Cargo {
   id: string;
@@ -30,6 +31,7 @@ interface Parametro {
 }
 
 const Cargos = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [cargos, setCargos] = useState<Cargo[]>([]);
   const [parametros, setParametros] = useState<Record<string, Parametro>>({});
@@ -141,11 +143,17 @@ const Cargos = () => {
   return (
     <Layout>
       <div className="space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Gestão de Cargos</h2>
-          <p className="text-muted-foreground">
-            Visualize e edite os parâmetros de cálculo de cada cargo
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Gestão de Cargos</h2>
+            <p className="text-muted-foreground">
+              Visualize e edite os parâmetros de cálculo de cada cargo
+            </p>
+          </div>
+          <Button onClick={() => navigate("/")} variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar ao Dashboard
+          </Button>
         </div>
 
         {Object.entries(groupedCargos).map(([grupo, cargosList]) => {
