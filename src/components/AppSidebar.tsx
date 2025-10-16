@@ -1,4 +1,4 @@
-import { Users, Settings, FileText, ChartBar, Home } from "lucide-react";
+import { Users, Settings, LayoutDashboard, Layers, FileBarChart2, Beaker } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -19,13 +19,12 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
 
   const adminItems = [
-    { title: "Gestão de Cargos", url: "/cargos", icon: Settings },
     { title: "Gerenciar Usuários", url: "/usuarios", icon: Users },
   ];
 
   const userItems = [
-    { title: "Cenários", url: "/cenarios", icon: FileText },
-    { title: "Relatórios", url: "/relatorios", icon: ChartBar },
+    { title: "Cenários", url: "/cenarios", icon: Layers },
+    { title: "Relatórios", url: "/relatorios", icon: FileBarChart2 },
   ];
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -43,11 +42,12 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <NavLink to="/" end className={getNavCls}>
-                    <Home className="h-4 w-4" />
+                    <LayoutDashboard className="h-4 w-4" />
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -73,7 +73,12 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel>Simulações</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            <span className="flex items-center gap-2">
+              <Beaker className="h-4 w-4" />
+              Simulações
+            </span>
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {userItems.map((item) => (

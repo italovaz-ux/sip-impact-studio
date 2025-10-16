@@ -8,77 +8,80 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 218 26% 18%;
-
+    /* Backgrounds: branco puro ou cinza muito claro */
+    --background: 0 0% 100%; /* #ffffff */
     --card: 0 0% 100%;
-    --card-foreground: 218 26% 18%;
-
     --popover: 0 0% 100%;
-    --popover-foreground: 218 26% 18%;
 
-    --primary: 215 40% 22%;
+    /* Texto padrão: cinza escuro inspirado no #212529 */
+    --foreground: 210 10% 15%;
+    --card-foreground: 210 10% 15%;
+    --popover-foreground: 210 10% 15%;
+
+    /* Cor primária de ação (azul institucional) */
+    --primary: 215 65% 38%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 215 15% 92%;
-    --secondary-foreground: 215 40% 22%;
+    /* Superfícies secundárias (cinza claro #f8f9fa) */
+    --secondary: 210 16% 98%;
+    --secondary-foreground: 210 10% 15%;
 
-    --muted: 215 15% 95%;
-    --muted-foreground: 215 16% 47%;
+    /* Estados neutros/muted com contraste melhorado */
+    --muted: 210 16% 95%;
+    --muted-foreground: 210 9% 30%;
 
+    /* Ações alternativas (verde institucional) */
     --accent: 160 60% 35%;
     --accent-foreground: 0 0% 98%;
 
+    /* Estados destrutivos */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
+    /* Bordas e inputs com leve contraste */
     --border: 215 20% 88%;
     --input: 215 20% 88%;
-    --ring: 215 40% 22%;
+    --ring: 215 65% 38%;
 
     --radius: 0.5rem;
-    
-    --institutional-blue: 215 40% 22%;
+
+    /* Variáveis institucionais e efeitos visuais */
+    --institutional-blue: 215 65% 38%;
     --institutional-green: 160 60% 35%;
-    --gradient-institutional: linear-gradient(135deg, hsl(215 40% 22%), hsl(215 40% 28%));
-    --shadow-card: 0 2px 8px -2px hsl(215 40% 22% / 0.1);
+    --gradient-institutional: linear-gradient(135deg, hsl(215 65% 38%), hsl(215 65% 46%));
+    --shadow-card: 0 2px 8px -2px hsl(215 10% 15% / 0.08);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    /* Sidebar com fundo claro e texto escuro acessível */
+    --sidebar-background: 0 0% 98%; /* próximo de #f8f9fa */
+    --sidebar-foreground: 210 10% 20%;
+    --sidebar-primary: 215 65% 38%;
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
+    --sidebar-accent-foreground: 210 10% 20%;
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 218 26% 10%;
+    /* Melhor contraste em tema escuro */
+    --background: 220 16% 12%;
     --foreground: 0 0% 98%;
 
-    --card: 218 26% 14%;
+    --card: 220 16% 16%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 218 26% 14%;
+    --popover: 220 16% 16%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 215 40% 70%;
-    --primary-foreground: 218 26% 10%;
+    --primary: 215 70% 70%;
+    --primary-foreground: 220 16% 12%;
 
-    --secondary: 218 26% 18%;
+    --secondary: 220 16% 20%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 218 26% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 220 16% 20%;
+    --muted-foreground: 0 0% 80%;
 
     --accent: 160 60% 45%;
     --accent-foreground: 0 0% 98%;
@@ -86,9 +89,10 @@ All colors MUST be HSL.
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 218 26% 20%;
-    --input: 218 26% 20%;
-    --ring: 215 40% 70%;
+    --border: 220 16% 26%;
+    --input: 220 16% 26%;
+    --ring: 215 70% 70%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -106,6 +110,10 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans font-normal;
   }
+
+  /* Tamanho base de fonte: 14px em mobile, 16px em telas maiores */
+  html { font-size: 14px; }
+  @media (min-width: 768px) { html { font-size: 16px; } }
 }
