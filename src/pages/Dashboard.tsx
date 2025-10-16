@@ -97,7 +97,7 @@ const Dashboard = () => {
 
   const calculateValues = (cargo: CargoWithParams) => {
     const baseMensal = cargo.base_mensal;
-    const aliqPatronal = (baseMensal * cargo.aliquota_patronal) / 100;
+    const aliqPatronal = baseMensal * cargo.aliquota_patronal; // aliquota_patronal já está em decimal (0.20 = 20%)
     const auxSaude = cargo.auxilio_saude;
     const auxAlimentacao = cargo.auxilio_alimentacao;
     const acervo = cargo.aplica_acervo ? baseMensal * 0.10 : 0; // 10% quando aplicável
