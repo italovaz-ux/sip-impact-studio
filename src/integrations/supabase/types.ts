@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      cenario_cargos: {
+        Row: {
+          cargo_id: string
+          cenario_id: string
+          created_at: string
+          id: string
+          quantidade: number
+          updated_at: string
+        }
+        Insert: {
+          cargo_id: string
+          cenario_id: string
+          created_at?: string
+          id?: string
+          quantidade?: number
+          updated_at?: string
+        }
+        Update: {
+          cargo_id?: string
+          cenario_id?: string
+          created_at?: string
+          id?: string
+          quantidade?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cenario_cargos_cargo_id_fkey"
+            columns: ["cargo_id"]
+            isOneToOne: false
+            referencedRelation: "cargos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cenario_cargos_cenario_id_fkey"
+            columns: ["cenario_id"]
+            isOneToOne: false
+            referencedRelation: "cenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cenarios: {
         Row: {
           ativo: boolean

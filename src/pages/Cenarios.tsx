@@ -104,6 +104,7 @@ const Cenarios = () => {
   const [quantidades, setQuantidades] = useState<Record<string, number>>({});
   const [compareA, setCompareA] = useState<string | undefined>();
   const [compareB, setCompareB] = useState<string | undefined>();
+  const [compareTotals, setCompareTotals] = useState<{ a: { mensal: number; anual: number } | null; b: { mensal: number; anual: number } | null }>({ a: null, b: null });
   const [csvMap, setCsvMap] = useState<Record<string, CsvRow>>({});
   const [csvNormMap, setCsvNormMap] = useState<Record<string, CsvRow>>({});
 
@@ -191,6 +192,21 @@ const Cenarios = () => {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    const loadComparisons = async () => {
+      if (compareA && compareB) {
+        const [totalsA, totalsB] = await Promise.all([
+          computeTotalsForScenario(compareA),
+          computeTotalsForScenario(compareB)
+        ]);
+        setCompareTotals({ a: totalsA, b: totalsB });
+      } else {
+        setCompareTotals({ a: null, b: null });
+      }
+    };
+    loadComparisons();
+  }, [compareA, compareB, cargosData, csvMap, csvNormMap]);
 
   const loadCenarios = async () => {
     try {
@@ -337,27 +353,62 @@ const Cenarios = () => {
     return (value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const storageKey = (id: string) => `cenario_items_${id}`;
-  const loadScenarioItems = (id: string): ScenarioItem[] => {
+  const loadScenarioItems = async (id: string): Promise<ScenarioItem[]> => {
     try {
-      const raw = localStorage.getItem(storageKey(id));
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed as ScenarioItem[];
-      return [];
-    } catch {
+      const { data, error } = await supabase
+        .from("cenario_cargos")
+        .select("cargo_id, quantidade")
+        .eq("cenario_id", id);
+
+      if (error) {
+        console.error("Erro ao carregar itens do cenário:", error);
+        return [];
+      }
+
+      return (data || []).map(item => ({
+        cargoId: item.cargo_id,
+        quantidade: item.quantidade
+      }));
+    } catch (err) {
+      console.error("Erro ao carregar itens:", err);
       return [];
     }
   };
-  const saveScenarioItems = (id: string, items: ScenarioItem[]) => {
-    localStorage.setItem(storageKey(id), JSON.stringify(items));
+
+  const saveScenarioItems = async (id: string, items: ScenarioItem[]) => {
+    try {
+      // Primeiro, remove todos os itens existentes do cenário
+      await supabase
+        .from("cenario_cargos")
+        .delete()
+        .eq("cenario_id", id);
+
+      // Depois, insere os novos itens
+      if (items.length > 0) {
+        const { error } = await supabase
+          .from("cenario_cargos")
+          .insert(items.map(item => ({
+            cenario_id: id,
+            cargo_id: item.cargoId,
+            quantidade: item.quantidade
+          })));
+
+        if (error) {
+          console.error("Erro ao salvar itens:", error);
+          throw error;
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao salvar itens do cenário:", err);
+      throw err;
+    }
   };
 
-  const openConfigure = (cenario: Cenario) => {
+  const openConfigure = async (cenario: Cenario) => {
     setActiveScenarioId(cenario.id);
     setActiveScenarioName(cenario.nome);
     setCurrentStep("impacto");
-    const items = loadScenarioItems(cenario.id);
+    const items = await loadScenarioItems(cenario.id);
     const ids = new Set(items.map(i => i.cargoId));
     setSelectedCargoIds(ids);
     const qty: Record<string, number> = {};
@@ -384,11 +435,19 @@ const Cenarios = () => {
 
   const selectedCargos = cargosData.filter(c => selectedCargoIds.has(c.id));
 
-  const saveCurrentScenarioItems = () => {
+  const saveCurrentScenarioItems = async () => {
     if (!activeScenarioId) return;
     const items: ScenarioItem[] = selectedCargos.map(c => ({ cargoId: c.id, quantidade: Number(quantidades[c.id] || 0) }));
-    saveScenarioItems(activeScenarioId, items);
-    toast({ title: "Itens do cenário salvos", description: "As quantidades foram persistidas." });
+    try {
+      await saveScenarioItems(activeScenarioId, items);
+      toast({ title: "Itens do cenário salvos", description: "As quantidades foram salvas no banco de dados." });
+    } catch (err) {
+      toast({ 
+        variant: "destructive",
+        title: "Erro ao salvar", 
+        description: "Não foi possível salvar os itens do cenário." 
+      });
+    }
   };
 
   const computeTotalsFromCsv = () => {
@@ -404,8 +463,8 @@ const Cenarios = () => {
     return { mensal, anual };
   };
 
-  const computeTotalsForScenario = (scenarioId: string) => {
-    const items = loadScenarioItems(scenarioId);
+  const computeTotalsForScenario = async (scenarioId: string) => {
+    const items = await loadScenarioItems(scenarioId);
     let mensal = 0;
     let anual = 0;
     items.forEach(item => {
@@ -442,7 +501,7 @@ const Cenarios = () => {
           aggregated[i.cargoId] = (aggregated[i.cargoId] || 0) + Number(i.quantidade || 0);
         });
         const itemsToSave: ScenarioItem[] = Object.entries(aggregated).map(([cargoId, quantidade]) => ({ cargoId, quantidade }));
-        saveScenarioItems(data.id, itemsToSave);
+        await saveScenarioItems(data.id, itemsToSave);
         setActiveScenarioId(data.id);
         setActiveScenarioName(formData.nome);
         setSelectedCargoIds(new Set(itemsToSave.map(i => i.cargoId)));
@@ -884,11 +943,11 @@ const Cenarios = () => {
               </div>
             </div>
 
-            {compareA && compareB && (
+            {compareA && compareB && compareTotals.a && compareTotals.b && (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(() => {
-                  const a = computeTotalsForScenario(compareA);
-                  const b = computeTotalsForScenario(compareB);
+                  const a = compareTotals.a;
+                  const b = compareTotals.b;
                   const deltaM = b.mensal - a.mensal;
                   const deltaA = b.anual - a.anual;
                   return (
