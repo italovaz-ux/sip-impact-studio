@@ -899,7 +899,7 @@ const Cenarios = () => {
                   ); })()}
 
                   <div className="flex w-full justify-end gap-2">
-                    <Button variant="outline" onClick={() => setCurrentStep('quantidades')}>Voltar</Button>
+                    <Button variant="outline" onClick={() => setCurrentStep('selecionar')}>Editar Cenário</Button>
                     <Button variant="default" onClick={() => { saveScenarioItems(activeScenarioId!, selectedCargos.map(c => ({ cargoId: c.id, quantidade: Number(quantidades[c.id] || 0) })) ); toast({ title: 'Cenário atualizado', description: 'Configuração salva.' }); }}>Salvar</Button>
                   </div>
                 </div>

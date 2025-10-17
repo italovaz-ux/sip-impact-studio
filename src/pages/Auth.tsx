@@ -107,7 +107,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/90 to-accent p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[rgb(166,2,37)] to-[rgb(90,90,90)] p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">SIP/MPPI</CardTitle>

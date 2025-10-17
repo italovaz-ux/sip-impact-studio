@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -95,6 +96,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="w-full flex items-center justify-center p-2">
+          <img
+            src="/Logo.jpeg"
+            alt="Logo"
+            className={collapsed ? "h-10 w-10 object-contain mix-blend-multiply opacity-95" : "max-w-[200px] w-full object-contain mix-blend-multiply opacity-95"}
+          />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

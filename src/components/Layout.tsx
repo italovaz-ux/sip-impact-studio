@@ -56,8 +56,8 @@ const Layout = ({ children }: LayoutProps) => {
                   <SidebarTrigger>
                     <Menu className="h-5 w-5" />
                   </SidebarTrigger>
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <BarChart3 className="h-6 w-6 text-primary-foreground" />
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[rgb(90,90,90)] to-[rgb(166,2,37)] flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6 text-white" />
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-foreground">SIP/MPPI</h1>
