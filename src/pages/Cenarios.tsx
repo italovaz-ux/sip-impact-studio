@@ -356,7 +356,7 @@ const Cenarios = () => {
   const openConfigure = (cenario: Cenario) => {
     setActiveScenarioId(cenario.id);
     setActiveScenarioName(cenario.nome);
-    setCurrentStep("selecionar");
+    setCurrentStep("impacto");
     const items = loadScenarioItems(cenario.id);
     const ids = new Set(items.map(i => i.cargoId));
     setSelectedCargoIds(ids);
@@ -680,91 +680,6 @@ const Cenarios = () => {
           </Card>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><GitCompare className="h-5 w-5" /> Comparar Cenários</CardTitle>
-            <CardDescription>Selecione dois cenários para comparar lado a lado</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <div>
-                <Label>Cenário A</Label>
-                <Select value={compareA || ''} onValueChange={(v) => setCompareA(v || null)}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o Cenário A" /></SelectTrigger>
-                  <SelectContent>
-                    {cenarios.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Cenário B</Label>
-                <Select value={compareB || ''} onValueChange={(v) => setCompareB(v || null)}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o Cenário B" /></SelectTrigger>
-                  <SelectContent>
-                    {cenarios.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => { setCompareA(null); setCompareB(null); }}>Limpar</Button>
-                <Button variant="default" disabled={!compareA || !compareB} onClick={() => toast({ title: 'Comparação pronta', description: 'Veja os totais abaixo.' })}>Comparar</Button>
-              </div>
-            </div>
-
-            {compareA && compareB && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(() => {
-                  const a = computeTotalsForScenario(compareA);
-                  const b = computeTotalsForScenario(compareB);
-                  const deltaM = b.mensal - a.mensal;
-                  const deltaA = b.anual - a.anual;
-                  return (
-                    <>
-                      <Card className="bg-muted/30">
-                        <CardHeader>
-                          <CardTitle className="text-lg">Cenário A</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(a.mensal)}</span></div>
-                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(a.anual)}</span></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-muted/30">
-                        <CardHeader>
-                          <CardTitle className="text-lg">Cenário B</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(b.mensal)}</span></div>
-                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(b.anual)}</span></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-muted/30">
-                        <CardHeader>
-                          <CardTitle className="text-lg">Diferença (B - A)</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(deltaM)}</span></div>
-                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(deltaA)}</span></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
         {activeScenarioId && (
           <Card>
             <CardHeader>
@@ -933,6 +848,91 @@ const Cenarios = () => {
             </CardContent>
           </Card>
         )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><GitCompare className="h-5 w-5" /> Comparar Cenários</CardTitle>
+            <CardDescription>Selecione dois cenários para comparar lado a lado</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div>
+                <Label>Cenário A</Label>
+                <Select value={compareA || ''} onValueChange={(v) => setCompareA(v || null)}>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o Cenário A" /></SelectTrigger>
+                  <SelectContent>
+                    {cenarios.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Cenário B</Label>
+                <Select value={compareB || ''} onValueChange={(v) => setCompareB(v || null)}>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o Cenário B" /></SelectTrigger>
+                  <SelectContent>
+                    {cenarios.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => { setCompareA(null); setCompareB(null); }}>Limpar</Button>
+                <Button variant="default" disabled={!compareA || !compareB} onClick={() => toast({ title: 'Comparação pronta', description: 'Veja os totais abaixo.' })}>Comparar</Button>
+              </div>
+            </div>
+
+            {compareA && compareB && (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {(() => {
+                  const a = computeTotalsForScenario(compareA);
+                  const b = computeTotalsForScenario(compareB);
+                  const deltaM = b.mensal - a.mensal;
+                  const deltaA = b.anual - a.anual;
+                  return (
+                    <>
+                      <Card className="bg-muted/30">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Cenário A</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(a.mensal)}</span></div>
+                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(a.anual)}</span></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-muted/30">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Cenário B</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(b.mensal)}</span></div>
+                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(b.anual)}</span></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-muted/30">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Diferença (B - A)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex justify-between"><span>Mensal</span><span className="font-semibold">R$ {formatCurrency(deltaM)}</span></div>
+                            <div className="flex justify-between"><span>Anual</span><span className="font-bold">R$ {formatCurrency(deltaA)}</span></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
