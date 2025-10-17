@@ -47,6 +47,19 @@ interface ScenarioItem {
   quantidade: number;
 }
 
+interface CsvRow { 
+  label: string; 
+  base: number; 
+  contrib: number; 
+  aux: number; 
+  alimentacao: number; 
+  acervo: number; 
+  mensal: number; 
+  decimo: number; 
+  ferias: number; 
+  anual: number; 
+}
+
 const Cenarios = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -91,10 +104,84 @@ const Cenarios = () => {
   const [quantidades, setQuantidades] = useState<Record<string, number>>({});
   const [compareA, setCompareA] = useState<string | undefined>();
   const [compareB, setCompareB] = useState<string | undefined>();
-  // CSV de cálculos
-  interface CsvRow { label: string; base: number; contrib: number; aux: number; alimentacao: number; acervo: number; mensal: number; decimo: number; ferias: number; anual: number; }
   const [csvMap, setCsvMap] = useState<Record<string, CsvRow>>({});
   const [csvNormMap, setCsvNormMap] = useState<Record<string, CsvRow>>({});
+
+  // Funções auxiliares para CSV
+  const parseBRLToNumber = (value: string): number => {
+    if (!value) return 0;
+    const cleaned = value
+      .replace(/\s/g, "")
+      .replace(/R\$/g, "")
+      .replace(/\./g, "")
+      .replace(/,/g, ".")
+      .replace(/\"/g, "")
+      .trim();
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const splitCsvLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') { inQuotes = !inQuotes; continue; }
+      if (char === ',' && !inQuotes) { result.push(current); current = ""; } else { current += char; }
+    }
+    result.push(current);
+    return result.map((c) => c.trim());
+  };
+
+  const normalizeLabel = (s: string): string => {
+    return (s || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*-\s*/g, '-')
+      .trim();
+  };
+
+  const loadCsvCalculations = async (): Promise<Record<string, CsvRow>> => {
+    try {
+      const res = await fetch('/calculos.csv');
+      const text = await res.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      const map: Record<string, CsvRow> = {};
+      for (const line of lines) {
+        const cells = splitCsvLine(line);
+        if (!cells[0] || cells[0].length === 0) continue;
+        const label = cells[0];
+        if (cells.length < 10) continue;
+        const row: CsvRow = {
+          label,
+          base: parseBRLToNumber(cells[1]),
+          contrib: parseBRLToNumber(cells[2]),
+          aux: parseBRLToNumber(cells[3]),
+          alimentacao: parseBRLToNumber(cells[4]),
+          acervo: parseBRLToNumber(cells[5]),
+          mensal: parseBRLToNumber(cells[6]),
+          decimo: parseBRLToNumber(cells[7]),
+          ferias: parseBRLToNumber(cells[8]),
+          anual: parseBRLToNumber(cells[9]),
+        };
+        map[label] = row;
+      }
+      setCsvMap(map);
+      const norm: Record<string, CsvRow> = {};
+      Object.keys(map).forEach((label) => {
+        norm[normalizeLabel(label)] = map[label];
+      });
+      setCsvNormMap(norm);
+      return map;
+    } catch (error) {
+      console.error('Erro ao carregar calculos.csv:', error);
+      return {};
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -311,6 +398,22 @@ const Cenarios = () => {
       const label = labelForCargo(cargo);
       const csv = csvNormMap[normalizeLabel(label)] || csvMap[label];
       const qty = Number(quantidades[cargo.id] || 0);
+      mensal += (csv?.mensal ?? 0) * qty;
+      anual += (csv?.anual ?? 0) * qty;
+    });
+    return { mensal, anual };
+  };
+
+  const computeTotalsForScenario = (scenarioId: string) => {
+    const items = loadScenarioItems(scenarioId);
+    let mensal = 0;
+    let anual = 0;
+    items.forEach(item => {
+      const cargo = cargosData.find(c => c.id === item.cargoId);
+      if (!cargo) return;
+      const label = labelForCargo(cargo);
+      const csv = csvNormMap[normalizeLabel(label)] || csvMap[label];
+      const qty = item.quantidade;
       mensal += (csv?.mensal ?? 0) * qty;
       anual += (csv?.anual ?? 0) * qty;
     });
@@ -836,77 +939,3 @@ const Cenarios = () => {
 };
 
 export default Cenarios;
-  const parseBRLToNumber = (value: string): number => {
-    if (!value) return 0;
-    const cleaned = value
-      .replace(/\s/g, "")
-      .replace(/R\$/g, "")
-      .replace(/\./g, "")
-      .replace(/,/g, ".")
-      .replace(/\"/g, "")
-      .trim();
-    const num = parseFloat(cleaned);
-    return isNaN(num) ? 0 : num;
-  };
-
-  const splitCsvLine = (line: string): string[] => {
-    const result: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') { inQuotes = !inQuotes; continue; }
-      if (char === ',' && !inQuotes) { result.push(current); current = ""; } else { current += char; }
-    }
-    result.push(current);
-    return result.map((c) => c.trim());
-  };
-
-  const normalizeLabel = (s: string): string => {
-    return (s || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, ' ')
-      .replace(/\s*-\s*/g, '-')
-      .trim();
-  };
-
-  const loadCsvCalculations = async (): Promise<Record<string, CsvRow>> => {
-    try {
-      const res = await fetch('/calculos.csv');
-      const text = await res.text();
-      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
-      const map: Record<string, CsvRow> = {};
-      for (const line of lines) {
-        const cells = splitCsvLine(line);
-        if (!cells[0] || cells[0].length === 0) continue;
-        const label = cells[0];
-        if (cells.length < 10) continue;
-        const row: CsvRow = {
-          label,
-          base: parseBRLToNumber(cells[1]),
-          contrib: parseBRLToNumber(cells[2]),
-          aux: parseBRLToNumber(cells[3]),
-          alimentacao: parseBRLToNumber(cells[4]),
-          acervo: parseBRLToNumber(cells[5]),
-          mensal: parseBRLToNumber(cells[6]),
-          decimo: parseBRLToNumber(cells[7]),
-          ferias: parseBRLToNumber(cells[8]),
-          anual: parseBRLToNumber(cells[9]),
-        };
-        map[label] = row;
-      }
-      setCsvMap(map);
-      const norm: Record<string, CsvRow> = {};
-      Object.keys(map).forEach((label) => {
-        norm[normalizeLabel(label)] = map[label];
-      });
-      setCsvNormMap(norm);
-      return map;
-    } catch (error) {
-      console.error('Erro ao carregar calculos.csv:', error);
-      return {};
-    }
-  };
