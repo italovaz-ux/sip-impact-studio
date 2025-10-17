@@ -719,7 +719,7 @@ const Cenarios = () => {
                             variant="outline"
                             onClick={() => openConfigure(cenario)}
                           >
-                            <SlidersHorizontal className="h-4 w-4 mr-1" /> Configurar
+                            <SlidersHorizontal className="h-4 w-4 mr-1" /> Editar
                           </Button>
                           <Button
                             size="sm"
