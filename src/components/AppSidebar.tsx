@@ -51,7 +51,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink to="/usuarios" className={getNavCls}>
                       <Settings className="h-4 w-4" />
-                      {!collapsed && <span>Gerenciar Usuários</span>}
+                      {!collapsed && <span>Gerenciar Sistema</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

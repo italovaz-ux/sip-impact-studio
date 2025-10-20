@@ -49,23 +49,24 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="border-b bg-card shadow-sm sticky top-0 z-10">
+          <header className="border-b bg-[#003d6b] shadow-sm sticky top-0 z-10">
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <SidebarTrigger>
-                    <Menu className="h-5 w-5" />
+                    <Menu className="h-5 w-5 text-white" />
                   </SidebarTrigger>
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[rgb(90,90,90)] to-[rgb(166,2,37)] flex items-center justify-center">
-                    <BarChart3 className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-foreground">SIP/MPPI</h1>
-                    <p className="text-xs text-muted-foreground">Sistema de Impacto de Pessoal</p>
+
+                  <div className="flex items-center">
+                    <img
+                      src="/logosistema.png"
+                      alt="SIP/MPPI - Sistema de Impacto de Pessoal"
+                      className="object-contain h-12 w-auto md:h-14"
+                    />
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-sm text-muted-foreground">{user.email}</span>
+                  <span className="text-sm text-white">{user.email}</span>
                   <Button variant="outline" size="sm" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sair

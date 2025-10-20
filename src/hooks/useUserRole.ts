@@ -16,6 +16,14 @@ export const useUserRole = () => {
           return;
         }
 
+        // Fallback de admin por e-mail específico
+        const email = user.email?.toLowerCase();
+        if (email === "italovaz@gmail.com") {
+          setIsAdmin(true);
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase
           .from("user_roles")
           .select("role")
