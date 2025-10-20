@@ -20,10 +20,9 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
 
 
-  const userItems = [
+  const simulationItems = [
     { title: "Cenários", url: "/cenarios", icon: Layers },
     { title: "Relatórios", url: "/relatorios", icon: FileBarChart2 },
-    { title: "Gerenciar Usuários", url: "/usuarios", icon: Settings },
   ];
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -47,10 +46,19 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/usuarios" className={getNavCls}>
+                      <Settings className="h-4 w-4" />
+                      {!collapsed && <span>Gerenciar Usuários</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
 
         <SidebarGroup>
           <SidebarGroupLabel>
@@ -61,21 +69,16 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {userItems.map((item) => {
-                // Only show "Gerenciar Usuários" if admin
-                if (item.url === "/usuarios" && !isAdmin) return null;
-                
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} className={getNavCls}>
-                        <item.icon className="h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {simulationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavCls}>
+                      <item.icon className="h-4 w-4" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
