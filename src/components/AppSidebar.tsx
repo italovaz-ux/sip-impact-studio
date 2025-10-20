@@ -19,13 +19,11 @@ export function AppSidebar() {
   const { isAdmin } = useUserRole();
   const collapsed = state === "collapsed";
 
-  const adminItems = [
-    { title: "Gerenciar Usuários", url: "/usuarios", icon: Users },
-  ];
 
   const userItems = [
     { title: "Cenários", url: "/cenarios", icon: Layers },
     { title: "Relatórios", url: "/relatorios", icon: FileBarChart2 },
+    { title: "Gerenciar Usuários", url: "/usuarios", icon: Settings },
   ];
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -53,25 +51,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Administração</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} className={getNavCls}>
-                        <item.icon className="h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
 
         <SidebarGroup>
           <SidebarGroupLabel>
@@ -82,16 +61,21 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {userItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {userItems.map((item) => {
+                // Only show "Gerenciar Usuários" if admin
+                if (item.url === "/usuarios" && !isAdmin) return null;
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink to={item.url} className={getNavCls}>
+                        <item.icon className="h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
