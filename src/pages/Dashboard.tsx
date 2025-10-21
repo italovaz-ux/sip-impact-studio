@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Briefcase, Award, GraduationCap, FileText } from "lucide-react";
+import { Users, Briefcase, Award, GraduationCap, FileText, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -477,6 +477,15 @@ const Dashboard = () => {
           <CardContent>
             {/* Ações de exportação */}
             <div className="flex w-full justify-end gap-2 mb-4">
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={() => navigate("/cenarios")}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Criar Cenário
+              </Button>
               <Button variant="outline" size="sm" onClick={handleExportCSV}>Exportar CSV</Button>
               <Button variant="default" size="sm" onClick={handleExportPDF}>Exportar PDF</Button>
             </div>
