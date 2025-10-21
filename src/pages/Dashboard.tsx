@@ -456,11 +456,22 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Visão geral do sistema de cálculo de impacto de pessoal
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-muted-foreground">
+              Visão geral do sistema de cálculo de impacto de pessoal
+            </p>
+          </div>
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={() => navigate("/cenarios")}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Criar Cenário
+          </Button>
         </div>
 
         {/* Cards de resumo removidos */}
@@ -477,15 +488,6 @@ const Dashboard = () => {
           <CardContent>
             {/* Ações de exportação */}
             <div className="flex w-full justify-end gap-2 mb-4">
-              <Button 
-                variant="default" 
-                size="sm" 
-                onClick={() => navigate("/cenarios")}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Criar Cenário
-              </Button>
               <Button variant="outline" size="sm" onClick={handleExportCSV}>Exportar CSV</Button>
               <Button variant="default" size="sm" onClick={handleExportPDF}>Exportar PDF</Button>
             </div>
