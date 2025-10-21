@@ -75,8 +75,22 @@ const Usuarios = () => {
 
   const loadUsers = async () => {
     try {
-      const { data: { users: authUsers } } = await supabase.auth.admin.listUsers();
-      setUsers(authUsers || []);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-list-users`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao carregar usuários');
+      }
+
+      setUsers(result.users || []);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -91,13 +105,23 @@ const Usuarios = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-create-user`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) throw error;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao criar usuário');
+      }
 
       toast({
         title: "Usuário criado com sucesso!",
@@ -123,9 +147,23 @@ const Usuarios = () => {
     if (!deleteUserId) return;
 
     try {
-      const { error } = await supabase.auth.admin.deleteUser(deleteUserId);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
-      if (error) throw error;
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-delete-user`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: deleteUserId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao remover usuário');
+      }
 
       toast({
         title: "Usuário removido",
@@ -147,12 +185,23 @@ const Usuarios = () => {
     if (!resetPasswordUserId || !newPassword) return;
 
     try {
-      const { error } = await supabase.auth.admin.updateUserById(
-        resetPasswordUserId,
-        { password: newPassword }
-      );
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
-      if (error) throw error;
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user-password`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: resetPasswordUserId, password: newPassword }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao alterar senha');
+      }
 
       toast({
         title: "Senha alterada",
